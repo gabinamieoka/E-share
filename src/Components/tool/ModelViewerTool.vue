@@ -9,31 +9,36 @@
     touch-action="pan-y"
     :alt="alt"
   >
-    <button slot="hotspot-dot+X-Y+Z" class="dot" data-position="1 -1 1" data-normal="1 0 0"></button>
-    <button v-show="showMeasurements" slot="hotspot-dim+X-Y" class="dim" data-position="1 -1 0" data-normal="1 0 0"></button>
-    <button slot="hotspot-dot+X-Y-Z" class="dot" data-position="1 -1 -1" data-normal="1 0 0"></button>
-    <button v-show="showMeasurements" slot="hotspot-dim+X-Z" class="dim" data-position="1 0 -1" data-normal="1 0 0"></button>
-    <button slot="hotspot-dot+X+Y-Z" class="dot" data-position="1 1 -1" data-normal="0 1 0"></button>
-    <button v-show="showMeasurements" slot="hotspot-dim+Y-Z" class="dim" data-position="0 -1 -1" data-normal="0 1 0"></button>
-    <button slot="hotspot-dot-X+Y-Z" class="dot" data-position="-1 1 -1" data-normal="0 1 0"></button>
-    <button v-show="showMeasurements" slot="hotspot-dim-X-Z" class="dim" data-position="-1 0 -1" data-normal="-1 0 0"></button>
-    <button slot="hotspot-dot-X-Y-Z" class="dot" data-position="-1 -1 -1" data-normal="-1 0 0"></button>
-    <button v-show="showMeasurements" slot="hotspot-dim-X-Y" class="dim" data-position="-1 -1 0" data-normal="-1 0 0"></button>
-    <button slot="hotspot-dot-X-Y+Z" class="dot" data-position="-1 -1 1" data-normal="-1 0 0"></button>
+    <!-- Hotspots from JSON -->
+    <button
+      v-for="spot in config.hotspots"
+      :key="spot.name"
+      :slot="spot.name"
+      :class="spot.type"
+    ></button>
 
-    <svg v-show="showMeasurements" id="dimLines" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" class="dimensionLineContainer">
-      <line class="dimensionLine" />
-      <line class="dimensionLine" />
-      <line class="dimensionLine" />
-      <line class="dimensionLine" />
-      <line class="dimensionLine" />
+    <!-- SVG for dimension lines -->
+    <svg
+      v-show="showMeasurements"
+      id="dimLines"
+      width="100%"
+      height="100%"
+      xmlns="http://www.w3.org/2000/svg"
+      class="dimensionLineContainer"
+    >
+      <line
+        v-for="(line, i) in config.lines"
+        :key="i"
+        class="dimensionLine"
+      />
     </svg>
   </model-viewer>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import '@google/model-viewer'
+import config from '../../../eShare/examples/dimensions.json'
 
 const props = defineProps({
   src: String,
@@ -41,9 +46,9 @@ const props = defineProps({
   showMeasurements: Boolean
 })
 
-const modelViewer = ref(null)
+const modelViewer = ref<any>(null)
 
-function drawLine(svgLine, dot1, dot2, dimHotspot = null) {
+function drawLine(svgLine: SVGLineElement, dot1: any, dot2: any, dimHotspot: any = null) {
   if (!dot1 || !dot2) return
   svgLine.setAttribute('x1', dot1.canvasPosition.x)
   svgLine.setAttribute('y1', dot1.canvasPosition.y)
@@ -53,14 +58,14 @@ function drawLine(svgLine, dot1, dot2, dimHotspot = null) {
   else svgLine.classList.remove('hide')
 }
 
-function renderSVG() {
-  const viewer = modelViewer.value
+function renderSVG(viewer: any) {
   const dimLines = viewer.querySelectorAll('line')
-  drawLine(dimLines[0], viewer.queryHotspot('hotspot-dot+X-Y+Z'), viewer.queryHotspot('hotspot-dot+X-Y-Z'), viewer.queryHotspot('hotspot-dim+X-Y'))
-  drawLine(dimLines[1], viewer.queryHotspot('hotspot-dot+X-Y-Z'), viewer.queryHotspot('hotspot-dot+X+Y-Z'), viewer.queryHotspot('hotspot-dim+X-Z'))
-  drawLine(dimLines[2], viewer.queryHotspot('hotspot-dot+X+Y-Z'), viewer.queryHotspot('hotspot-dot-X+Y-Z'))
-  drawLine(dimLines[3], viewer.queryHotspot('hotspot-dot-X+Y-Z'), viewer.queryHotspot('hotspot-dot-X-Y-Z'), viewer.queryHotspot('hotspot-dim-X-Z'))
-  drawLine(dimLines[4], viewer.queryHotspot('hotspot-dot-X-Y-Z'), viewer.queryHotspot('hotspot-dot-X-Y+Z'), viewer.queryHotspot('hotspot-dim-X-Y'))
+  config.lines.forEach((line, i) => {
+    const from = viewer.queryHotspot(line.from)
+    const to = viewer.queryHotspot(line.to)
+    const dimHotspot = line.dim ? viewer.queryHotspot(line.dim) : null
+    drawLine(dimLines[i], from, to, dimHotspot)
+  })
 }
 
 onMounted(() => {
@@ -70,7 +75,8 @@ onMounted(() => {
     const size = viewer.getDimensions()
     const [x2, y2, z2] = [size.x / 2, size.y / 2, size.z / 2]
 
-    const setHotspot = (name, x, y, z, label = null, value = null) => {
+    // Position hotspots dynamically
+    const setHotspot = (name: string, x: number, y: number, z: number, label?: string, value?: number) => {
       viewer.updateHotspot({ name, position: `${x} ${y} ${z}` })
       if (label && value) {
         const el = viewer.querySelector(`button[slot="${label}"]`)
@@ -79,21 +85,23 @@ onMounted(() => {
     }
 
     setHotspot('hotspot-dot+X-Y+Z', center.x + x2, center.y - y2, center.z + z2)
-    setHotspot('hotspot-dim+X-Y', center.x + x2 * 1.2, center.y - y2 * 1.1, center.z, 'hotspot-dim+X-Y', size.z)
+    setHotspot('hotspot-dim+X-Y',   center.x + x2 * 1.2, center.y - y2 * 1.1, center.z, 'hotspot-dim+X-Y', size.z)
     setHotspot('hotspot-dot+X-Y-Z', center.x + x2, center.y - y2, center.z - z2)
-    setHotspot('hotspot-dim+X-Z', center.x + x2 * 1.2, center.y, center.z - z2 * 1.2, 'hotspot-dim+X-Z', size.y)
+    setHotspot('hotspot-dim+X-Z',   center.x + x2 * 1.2, center.y, center.z - z2 * 1.2, 'hotspot-dim+X-Z', size.y)
     setHotspot('hotspot-dot+X+Y-Z', center.x + x2, center.y + y2, center.z - z2)
-    setHotspot('hotspot-dim+Y-Z', center.x, center.y + y2 * 1.1, center.z - z2 * 1.1, 'hotspot-dim+Y-Z', size.x)
+    setHotspot('hotspot-dim+Y-Z',   center.x, center.y + y2 * 1.1, center.z - z2 * 1.1, 'hotspot-dim+Y-Z', size.x)
     setHotspot('hotspot-dot-X+Y-Z', center.x - x2, center.y + y2, center.z - z2)
-    setHotspot('hotspot-dim-X-Z', center.x - x2 * 1.2, center.y, center.z - z2 * 1.2, 'hotspot-dim-X-Z', size.y)
+    setHotspot('hotspot-dim-X-Z',   center.x - x2 * 1.2, center.y, center.z - z2 * 1.2, 'hotspot-dim-X-Z', size.y)
     setHotspot('hotspot-dot-X-Y-Z', center.x - x2, center.y - y2, center.z - z2)
-    setHotspot('hotspot-dim-X-Y', center.x - x2 * 1.2, center.y - y2 * 1.1, center.z, 'hotspot-dim-X-Y', size.z)
+    setHotspot('hotspot-dim-X-Y',   center.x - x2 * 1.2, center.y - y2 * 1.1, center.z, 'hotspot-dim-X-Y', size.z)
     setHotspot('hotspot-dot-X-Y+Z', center.x - x2, center.y - y2, center.z + z2)
 
-    renderSVG()
-    viewer.addEventListener('camera-change', renderSVG)
+    renderSVG(viewer)
+    viewer.addEventListener('camera-change', () => renderSVG(viewer))
   })
 })
+
+
 </script>
 
 <style scoped>

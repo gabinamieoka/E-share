@@ -1,0 +1,4943 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "eShare Public API",
+    "version": "2025H1R1"
+  },
+  "paths": {
+    "/api/public/v1/Authentication/GenerateJwt": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Generates a JSON Web Token to be used for gaining alternative access to eShare.",
+        "operationId": "GenerateJwt",
+        "requestBody": {
+          "description": "A container for the user ID that the token is generated for.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GuidValueContainerDto"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtContainer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/Authentication/WithBasic": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Authenticates to eShare and responds with an authorization token.",
+        "description": "Please note that authentication should only be done over secure HTTPS connection.\r\n            \r\nIf successful, the server responds with status code 204, with X-CAD-Authorization header in the response.\r\nThis session header is used to gain access to eShare, and should be used in all other requests.\r\n            \r\nIf the authentication fails, the server returns status code 401.",
+        "operationId": "GetBearerTokenWithBasic",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "query",
+            "description": "The query parameter used by the endpoint to authenticate. Supports Basic authentication format. Not needed if authentication is passed in the Authorization header.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtContainer"
+                }
+              }
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/api/public/v1/project/{projectId}/Documents/Indexed": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Gets information about all indexed documents, such as their metadata and link values. Additionally, the endpoint can tell if the link leads to a model object in the model or not.",
+        "operationId": "GetIndexedDocumentsInformation",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The ID of the project.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "isReferenceIncluded",
+            "in": "query",
+            "description": "If true, does an additional search for all the links to find whether the link references an object in the model or not.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "The offset value of the documents to be fetched from the server.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The number of documents to be fetched from the server.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentInformationDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/ManagedDocuments": {
+      "post": {
+        "tags": [
+          "ManagedDocuments"
+        ],
+        "summary": "Creates a new document to the project.",
+        "operationId": "CreateManagedDocument",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The ID of the project.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedDocumentResult"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "ManagedDocuments"
+        ],
+        "summary": "Gets information of all of the documents available to the user.",
+        "operationId": "GetAllManagedDocuments",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The ID of the project.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "ManagedDocuments"
+        ],
+        "summary": "Updates a document with a new version.",
+        "operationId": "UpdateManagedDocument",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The ID of the project.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedDocumentResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/ManagedDocuments/Folders": {
+      "post": {
+        "tags": [
+          "ManagedDocuments"
+        ],
+        "summary": "Creates a new document folder.",
+        "operationId": "CreateManagedDocumentFolder",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The ID of the project.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The ID of the folder.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/DocumentFolderDto"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "ManagedDocuments"
+        ],
+        "summary": "Gets all document folders.",
+        "operationId": "GetAllManagedDocumentFolders",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The ID of the project.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentFolderDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/ManagedDocuments/{documentId}": {
+      "delete": {
+        "tags": [
+          "ManagedDocuments"
+        ],
+        "summary": "Deletes the specified document.",
+        "operationId": "DeleteManagedDocumentById",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The ID of the project.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "The ID of the document.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": null
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "ManagedDocuments"
+        ],
+        "summary": "Gets information of the specified document.",
+        "operationId": "GetManagedDocumentById",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The ID of the project.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "The ID of the document.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/ManagedDocuments/Folders/{folderId}": {
+      "delete": {
+        "tags": [
+          "ManagedDocuments"
+        ],
+        "summary": "Deletes the specified document folder.",
+        "operationId": "DeleteManagedDocumentFolderById",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The ID of the project.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "folderId",
+            "in": "path",
+            "description": "The ID of the folder.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": null
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "ManagedDocuments"
+        ],
+        "summary": "Gets the specified document folder.",
+        "operationId": "GetManagedDocumentFolderById",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The ID of the project.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "folderId",
+            "in": "path",
+            "description": "The ID of the folder.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentFolderDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/Markups": {
+      "get": {
+        "tags": [
+          "Markups"
+        ],
+        "summary": "List all markups in this project (that are visible to this user).",
+        "operationId": "GetAllMarkups",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicMarkupsDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/Markups/{markupId}": {
+      "get": {
+        "tags": [
+          "Markups"
+        ],
+        "summary": "Get details of a markup by its ID.",
+        "operationId": "GetMarkupById",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "markupId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicMarkupDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/Markups/Thumbnail/{imageId}": {
+      "get": {
+        "tags": [
+          "Markups"
+        ],
+        "summary": "Gets a markup thumbnail by its attribute ID. To get a thumbnail URL for a markup, call\r\na markup endpoint and use the ThumbnailUrl property.",
+        "operationId": "GetMarkupThumbnail",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "imageId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "200": {
+            "description": null,
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/ModelAttributes/SearchableDefinitions": {
+      "get": {
+        "tags": [
+          "ModelAttributes"
+        ],
+        "summary": "Get all model attribute definitions for the given project.",
+        "operationId": "GetSearchableAttributeDefinitions",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AttributeDefinitionDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v2/project/{projectId}/ModelHierarchies": {
+      "get": {
+        "tags": [
+          "ModelHierarchies"
+        ],
+        "summary": "Returns model hierarchies information of the project.",
+        "operationId": "GetModelHierarchies",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "Project ID (GUID)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelHierarchies2Dto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/ModelHierarchies": {
+      "get": {
+        "tags": [
+          "ModelHierarchies"
+        ],
+        "summary": "Returns a list of available model hierarchies in the project.",
+        "operationId": "GetModelHierarchyDefinitions",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "Project ID (GUID)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ModelHierarchyDefinitionDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/ModelItems/{objectId}": {
+      "get": {
+        "tags": [
+          "ModelItems"
+        ],
+        "summary": "Gets the attributes associated with the specified model item, such as an object.",
+        "operationId": "GetModelItemsAttributes",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "objectId",
+            "in": "path",
+            "description": "The id (GUID) of the item.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "attributes",
+            "in": "query",
+            "description": "The list of wanted model object attribute abbreviations. If omitted, all available attributes are included.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "includeKeys",
+            "in": "query",
+            "description": "Whether to include key attributes in the response regardless of the value of attributes parameter. Has no effect if attributes parameter is omitted.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "\r\nDefines what attributes are wanted.\r\n<list type=\"table\">\r\n  <item>\"Model\" gets the attributes defined in the model, as well as points of interests linked to the item.</item>\r\n  <item>\"Statuses\" gets the status trackings and their values.</item>\r\n  <item>\"Documents\" gets the documents linked to the item.</item>\r\n  <item>\"DataSources\" gets the attributes of all the external object attribute data sources linked to the item.</item>\r\n  <item>\"All\" gets all the attributes related to the item.</item>\r\n</list>\r\n            By default, \"Model\" is used as the scope.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ModelItemAttributeDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/ModelItems/WithHierarchy": {
+      "post": {
+        "tags": [
+          "ModelItems"
+        ],
+        "summary": "Returns basic information of all the items of the given item in the given model hierarchy",
+        "description": "Note: Does not support new dynamic model hierarchies.",
+        "operationId": "GetModelItemsHierarchyLevelItems",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "hierarchyName",
+            "in": "query",
+            "description": "The name of the model hierarchy. Case sensitive.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "targetObject",
+            "in": "query",
+            "description": "Target item in the hierarchy which children should be fetched. Optional. If not given, the root level of the hierarchy is fetched instead.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ModelItemDescriptionDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/ModelItems/GetMultiple": {
+      "post": {
+        "tags": [
+          "ModelItems"
+        ],
+        "summary": "Gets the attributes of multiple model items.",
+        "operationId": "GetModelItemsMultiple",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "\r\nDefines what attributes are wanted.\r\n<list type=\"table\">\r\n  <item>\"Model\" gets the attributes defined in the model, as well as points of interests linked to the item.</item>\r\n  <item>\"Statuses\" gets the status trackings and their values.</item>\r\n  <item>\"Documents\" gets the documents linked to the item.</item>\r\n  <item>\"DataSources\" gets the attributes of all the external object attribute data sources linked to the item.</item>\r\n  <item>\"All\" gets all the attributes related to the item.</item>\r\n</list>\r\n            By default, \"Model\" is used as the scope.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "attributes",
+            "in": "query",
+            "description": "The list of wanted model object attribute abbreviations. If omitted, all available attributes are included.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "includeKeys",
+            "in": "query",
+            "description": "Whether to include key attributes in the response regardless of the value of attributes parameter. Has no effect if attributes parameter is omitted.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The list of wanted item ids.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ModelItemDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/ModelItems/FindWithAttribute": {
+      "get": {
+        "tags": [
+          "ModelItems"
+        ],
+        "summary": "Gets the list of objects that are found with the given attribute parameters.",
+        "operationId": "GetModelItemsWithAttribute",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "abbreviation",
+            "in": "query",
+            "description": "The attribute abbreviation of the object (optional)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "value",
+            "in": "query",
+            "description": "The key attribute value of the object",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "\r\nDefines what attributes are wanted.\r\n<list type=\"table\">\r\n  <item>\"Model\" gets the attributes defined in the model, as well as points of interests linked to the item.</item>\r\n  <item>\"Statuses\" gets the status trackings and their values.</item>\r\n  <item>\"Documents\" gets the documents linked to the item.</item>\r\n  <item>\"DataSources\" gets the attributes of all the external object attribute data sources linked to the item.</item>\r\n  <item>\"All\" gets all the attributes related to the item.</item>\r\n</list>\r\n            By default, \"Model\" is used as the scope.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "attributes",
+            "in": "query",
+            "description": "The list of wanted model object attribute abbreviations. If omitted, all available attributes are included.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "includeKeys",
+            "in": "query",
+            "description": "Whether to include key attributes in the response regardless of the value of attributes parameter. Has no effect if attributes parameter is omitted.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ModelItemDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/ModelItems/WithGeometryId/{geometryId}": {
+      "get": {
+        "tags": [
+          "ModelItems"
+        ],
+        "summary": "Gets the attributes associated with the specified model item, such as an object.",
+        "operationId": "GetModelItemsAttributesWithGeometryId",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "geometryId",
+            "in": "path",
+            "description": "The id (uint) of the item.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "attributes",
+            "in": "query",
+            "description": "The list of wanted model object attribute abbreviations. If omitted, all available attributes are included.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "includeKeys",
+            "in": "query",
+            "description": "Whether to include key attributes in the response regardless of the value of attributes parameter. Has no effect if attributes parameter is omitted.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "\r\nDefines what attributes are wanted.\r\n<list type=\"table\">\r\n  <item>\"Model\" gets the attributes defined in the model, as well as points of interests linked to the item.</item>\r\n  <item>\"Statuses\" gets the status trackings and their values.</item>\r\n  <item>\"Documents\" gets the documents linked to the item.</item>\r\n  <item>\"DataSources\" gets the attributes of all the external object attribute data sources linked to the item.</item>\r\n  <item>\"All\" gets all the attributes related to the item.</item>\r\n</list>\r\n            By default, \"Model\" is used as the scope.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ModelItemAttributeDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/ModelItems/GetMultipleWithGeometryIds": {
+      "post": {
+        "tags": [
+          "ModelItems"
+        ],
+        "summary": "Gets the attributes of multiple model items.",
+        "operationId": "GetModelItemsWithUints",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "\r\nDefines what attributes are wanted.\r\n<list type=\"table\">\r\n  <item>\"Model\" gets the attributes defined in the model, as well as points of interests linked to the item.</item>\r\n  <item>\"Statuses\" gets the status trackings and their values.</item>\r\n  <item>\"Documents\" gets the documents linked to the item.</item>\r\n  <item>\"DataSources\" gets the attributes of all the external object attribute data sources linked to the item.</item>\r\n  <item>\"All\" gets all the attributes related to the item.</item>\r\n</list>\r\n            By default, \"Model\" is used as the scope.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "attributes",
+            "in": "query",
+            "description": "The list of wanted model object attribute abbreviations. If omitted, all available attributes are included.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "includeKeys",
+            "in": "query",
+            "description": "Whether to include key attributes in the response regardless of the value of attributes parameter. Has no effect if attributes parameter is omitted.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The list of wanted item geometry IDs.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ModelItemUintDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/Models/{modelId}": {
+      "post": {
+        "tags": [
+          "Models"
+        ],
+        "summary": "Uploads and publishes a model",
+        "operationId": "ImportModel",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "modelId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "file"
+                ],
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "file": {
+                  "style": "form"
+                }
+              }
+            },
+            "application/json": {
+              "schema": {
+                "required": [
+                  "file"
+                ],
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "file": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/Models/{modelId}/WithToken": {
+      "post": {
+        "tags": [
+          "Models"
+        ],
+        "summary": "Uploads and publishes a model",
+        "operationId": "ImportModelWithToken",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "modelId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "description": "A one-time token used in authentication",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "file"
+                ],
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "file": {
+                  "style": "form"
+                }
+              }
+            },
+            "application/json": {
+              "schema": {
+                "required": [
+                  "file"
+                ],
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "file": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/Models/HoloLens/Geometry": {
+      "get": {
+        "tags": [
+          "Models"
+        ],
+        "summary": "Gets the geometry of the project model",
+        "operationId": "GetModelGeometry",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "subModelId",
+            "in": "query",
+            "description": "Fetches the geometry of the desired submodel instead, if this parameter is in use",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": null,
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/Models/LastModifiedTimestamp": {
+      "get": {
+        "tags": [
+          "Models"
+        ],
+        "summary": "Gets the date of the last time the model was published",
+        "operationId": "GetModelTimeStamp",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/Points/{pointId}": {
+      "get": {
+        "tags": [
+          "Points"
+        ],
+        "summary": "Gets information about the smart point or markup.",
+        "operationId": "GetPointById",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The ID of the project",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "pointId",
+            "in": "path",
+            "description": "The ID of the point",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddPointDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/Points/ByTag": {
+      "get": {
+        "tags": [
+          "Points"
+        ],
+        "summary": "Gets information of all the smart points and markups referencing a model object with the given attribute value.",
+        "operationId": "GetPointByTag",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The ID of the project.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "abbreviation",
+            "in": "query",
+            "description": "The key attribute abbreviation of the object",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "value",
+            "in": "query",
+            "description": "The key attribute value of the object",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PointsOfInterestDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/Projects": {
+      "post": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Creates a new project to eShare.",
+        "operationId": "CreateProject",
+        "requestBody": {
+          "description": "The project configuration to create the project with.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ProjectDto"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Gets all projects available to the user.",
+        "operationId": "GetAllProjects",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/Projects/{projectId}": {
+      "delete": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Deletes the project and removes all the files and database entries related to it.",
+        "operationId": "DeleteProject",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The ID of the project to be deleted.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Gets information of the specified project",
+        "operationId": "GetProjectById",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The ID of the project.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Reconfigures the project with the given configuration.",
+        "operationId": "UpdateProject",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The ID of the target project.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The configuration.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ProjectDto"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/public/v1/ServerInfo": {
+      "get": {
+        "tags": [
+          "ServerInfo"
+        ],
+        "summary": "Provides information about the eShare server, such as which login method the server is using.",
+        "operationId": "GetServerInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerInfoDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/StatusTrackings/GetKinds": {
+      "get": {
+        "tags": [
+          "StatusTrackings"
+        ],
+        "summary": "Gets information about each status tracking kind allowed for the user, as well as of all the available states they have",
+        "operationId": "GetAllStatusTrackingKinds",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StatusTrackingKindDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/StatusTrackings": {
+      "post": {
+        "tags": [
+          "StatusTrackings"
+        ],
+        "summary": "Updates status tracking states with the given status tracking entries.",
+        "operationId": "UpdateStatusTrackings",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/StatusTrackingEntryDto"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/api/public/v1/project/{projectId}/SubModels": {
+      "post": {
+        "tags": [
+          "SubModels"
+        ],
+        "summary": "Gets information about all the submodels in the project. Empty and coordinate based submodels are filtered out",
+        "operationId": "GetModelDivisionInformation",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelDivisionInformationPublic"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v1/WhoAmI": {
+      "post": {
+        "tags": [
+          "WhoAmI"
+        ],
+        "summary": "Provides basic information about the authorized account making the request.",
+        "operationId": "RequestWhoAmI",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhoAmIDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AddPointDto": {
+        "required": [
+          "assigneeName",
+          "attributeValues",
+          "externalId",
+          "height",
+          "id",
+          "kindId",
+          "name",
+          "page",
+          "referenceDocumentDatasourceId",
+          "referenceDocumentId",
+          "referenceDocumentRevision",
+          "referenceObjectAbbreviation",
+          "referenceObjectGuidId",
+          "referenceObjectId",
+          "referenceObjectValue",
+          "status",
+          "width",
+          "x",
+          "y",
+          "z"
+        ],
+        "type": "object",
+        "properties": {
+          "assigneeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "externalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "height": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "kindId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "referenceDocumentDatasourceId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "referenceDocumentId": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceDocumentRevision": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceObjectAbbreviation": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceObjectGuidId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "referenceObjectValue": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "width": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "x": {
+            "type": "number",
+            "format": "double"
+          },
+          "y": {
+            "type": "number",
+            "format": "double"
+          },
+          "z": {
+            "type": "number",
+            "format": "double"
+          },
+          "referenceObjectId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "attributeValues": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/PointOfInterestStringAttributeDto"
+                },
+                {
+                  "$ref": "#/components/schemas/PointOfInterestMultilineAttributeDto"
+                },
+                {
+                  "$ref": "#/components/schemas/PointOfInterestEnumAttributeDto"
+                },
+                {
+                  "$ref": "#/components/schemas/PointOfInterestImageAttributeDto"
+                },
+                {
+                  "$ref": "#/components/schemas/PointOfInterestDrawingAttributeDto"
+                }
+              ],
+              "nullable": true
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AttributeDefinitionDto": {
+        "required": [
+          "abbreviation",
+          "dataType",
+          "displayName",
+          "displayPriority",
+          "enumValues",
+          "id",
+          "isGroup",
+          "isVisible"
+        ],
+        "type": "object",
+        "properties": {
+          "abbreviation": {
+            "type": "string",
+            "nullable": true
+          },
+          "dataType": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayPriority": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "enumValues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttributeDefinitionEnumValueDto"
+            },
+            "nullable": true
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isGroup": {
+            "type": "boolean"
+          },
+          "isVisible": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AttributeDefinitionEnumValueDto": {
+        "required": [
+          "id",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AzureADSettings": {
+        "required": [
+          "clientId",
+          "isEnabled",
+          "tenantId"
+        ],
+        "type": "object",
+        "properties": {
+          "isEnabled": {
+            "type": "boolean"
+          },
+          "clientId": {
+            "type": "string",
+            "nullable": true
+          },
+          "tenantId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CategorizationSequenceInitialObjectVisibilityState": {
+        "enum": [
+          "DoNotChange",
+          "ShowAllObjects",
+          "HideAllObjects"
+        ],
+        "type": "string"
+      },
+      "DocumentAreaLinkDefinitionDto": {
+        "required": [
+          "highlightMode",
+          "sourceAreaExternalId",
+          "sourceHeight",
+          "sourceLabel",
+          "sourceLeft",
+          "sourcePage",
+          "sourceTop",
+          "sourceWidth",
+          "targetAreaExternalId",
+          "targetDocumentExternalId",
+          "targetHeight",
+          "targetLabel",
+          "targetLeft",
+          "targetPage",
+          "targetTop",
+          "targetWidth"
+        ],
+        "type": "object",
+        "properties": {
+          "highlightMode": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceAreaExternalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceHeight": {
+            "type": "number",
+            "format": "double"
+          },
+          "sourceLabel": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceLeft": {
+            "type": "number",
+            "format": "double"
+          },
+          "sourcePage": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sourceTop": {
+            "type": "number",
+            "format": "double"
+          },
+          "sourceWidth": {
+            "type": "number",
+            "format": "double"
+          },
+          "targetAreaExternalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "targetDocumentExternalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "targetHeight": {
+            "type": "number",
+            "format": "double"
+          },
+          "targetLabel": {
+            "type": "string",
+            "nullable": true
+          },
+          "targetLeft": {
+            "type": "number",
+            "format": "double"
+          },
+          "targetPage": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "targetTop": {
+            "type": "number",
+            "format": "double"
+          },
+          "targetWidth": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DocumentAreaOfInterestDto": {
+        "required": [
+          "externalId",
+          "height",
+          "highlightMode",
+          "label",
+          "left",
+          "linksToDocumentAreas",
+          "linksToGuids",
+          "linksToObjects",
+          "page",
+          "top",
+          "width"
+        ],
+        "type": "object",
+        "properties": {
+          "externalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "height": {
+            "type": "number",
+            "format": "double"
+          },
+          "highlightMode": {
+            "type": "string",
+            "nullable": true
+          },
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "left": {
+            "type": "number",
+            "format": "double"
+          },
+          "linksToDocumentAreas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentToDocumentAreaLinkDto"
+            },
+            "nullable": true
+          },
+          "linksToGuids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentToGuidIdLinkDto"
+            },
+            "nullable": true
+          },
+          "linksToObjects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentToModelObjectLinkDto"
+            },
+            "nullable": true
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "top": {
+            "type": "number",
+            "format": "double"
+          },
+          "width": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DocumentDto": {
+        "required": [
+          "areasOfInterest",
+          "docType",
+          "documentAreaLinkDefinitions",
+          "externalId",
+          "folderId",
+          "id",
+          "linkDefinitions",
+          "metadata",
+          "originalName",
+          "path",
+          "revision"
+        ],
+        "type": "object",
+        "properties": {
+          "areasOfInterest": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentAreaOfInterestDto"
+            },
+            "nullable": true
+          },
+          "docType": {
+            "type": "string",
+            "nullable": true
+          },
+          "documentAreaLinkDefinitions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentAreaLinkDefinitionDto"
+            },
+            "nullable": true
+          },
+          "externalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "folderId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "linkDefinitions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentLinkDefinitionDto"
+            },
+            "nullable": true
+          },
+          "metadata": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentMetadataDto"
+            },
+            "nullable": true
+          },
+          "originalName": {
+            "type": "string",
+            "nullable": true
+          },
+          "path": {
+            "type": "string",
+            "nullable": true
+          },
+          "revision": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DocumentFolderDto": {
+        "required": [
+          "id",
+          "name",
+          "parentId",
+          "path"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "parentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "path": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DocumentIdKey": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EShareKey"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "datasourceId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "documentId": {
+                "type": "string",
+                "nullable": true
+              },
+              "linkAbbreviation": {
+                "type": "string",
+                "nullable": true
+              },
+              "linkValue": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "DocumentInformationDto": {
+        "required": [
+          "dataSourceName",
+          "id",
+          "linkTargets",
+          "metadata",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "dataSourceName": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "linkTargets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkTargetDto"
+            },
+            "nullable": true
+          },
+          "metadata": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentMetadataInformationDto"
+            },
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DocumentLinkDefinitionDto": {
+        "required": [
+          "abbreviation",
+          "height",
+          "highlightMode",
+          "left",
+          "page",
+          "top",
+          "value",
+          "width"
+        ],
+        "type": "object",
+        "properties": {
+          "abbreviation": {
+            "type": "string",
+            "nullable": true
+          },
+          "height": {
+            "type": "number",
+            "format": "double"
+          },
+          "highlightMode": {
+            "type": "string",
+            "nullable": true
+          },
+          "left": {
+            "type": "number",
+            "format": "double"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "top": {
+            "type": "number",
+            "format": "double"
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "width": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DocumentMetadataDto": {
+        "required": [
+          "abbreviation",
+          "dataType",
+          "name",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "abbreviation": {
+            "type": "string",
+            "nullable": true
+          },
+          "dataType": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DocumentMetadataInformationDto": {
+        "required": [
+          "name",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DocumentToDocumentAreaLinkDto": {
+        "required": [
+          "targetAreaExternalId",
+          "targetDocumentExternalId",
+          "targetDocumentId",
+          "targetHeight",
+          "targetHighlightMode",
+          "targetLabel",
+          "targetLeft",
+          "targetPage",
+          "targetTop",
+          "targetWidth"
+        ],
+        "type": "object",
+        "properties": {
+          "targetAreaExternalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "targetDocumentExternalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "targetDocumentId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "targetHeight": {
+            "type": "number",
+            "format": "double"
+          },
+          "targetHighlightMode": {
+            "type": "string",
+            "nullable": true
+          },
+          "targetLabel": {
+            "type": "string",
+            "nullable": true
+          },
+          "targetLeft": {
+            "type": "number",
+            "format": "double"
+          },
+          "targetPage": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "targetTop": {
+            "type": "number",
+            "format": "double"
+          },
+          "targetWidth": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DocumentToGuidIdLinkDto": {
+        "required": [
+          "guidId"
+        ],
+        "type": "object",
+        "properties": {
+          "guidId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DocumentToModelObjectLinkDto": {
+        "required": [
+          "abbreviation",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "abbreviation": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EShareKey": {
+        "required": [
+          "keyType"
+        ],
+        "type": "object",
+        "properties": {
+          "keyType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/KeyType"
+              }
+            ],
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false,
+        "discriminator": {
+          "propertyName": "keyType",
+          "mapping": {
+            "GeometryId": "#/components/schemas/GeometryIdKey",
+            "Tag": "#/components/schemas/TagKey",
+            "DocumentId": "#/components/schemas/DocumentIdKey",
+            "PointOfInterest": "#/components/schemas/PoiKey",
+            "StatusTracking": "#/components/schemas/StatusTrackingKey",
+            "MultiGeometryId": "#/components/schemas/MultiGeometryIdKey",
+            "GuidId": "#/components/schemas/GuidIdKey"
+          }
+        }
+      },
+      "GeometryIdKey": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EShareKey"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "geometryId": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "modelImportDate": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "GuidIdKey": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EShareKey"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "guidId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "modelImportDate": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "GuidValueContainerDto": {
+        "required": [
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "JwtContainer": {
+        "required": [
+          "jwt"
+        ],
+        "type": "object",
+        "properties": {
+          "jwt": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "KeyType": {
+        "enum": [
+          "GeometryId",
+          "Tag",
+          "DocumentId",
+          "PointOfInterest",
+          "PoiId",
+          "StatusTracking",
+          "MultiGeometryId",
+          "GuidId"
+        ],
+        "type": "string"
+      },
+      "LinkTargetDto": {
+        "required": [
+          "id",
+          "isReferenceFound",
+          "tag",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "isReferenceFound": {
+            "type": "boolean"
+          },
+          "tag": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ManagedDocumentResult": {
+        "required": [
+          "documentId",
+          "warnings"
+        ],
+        "type": "object",
+        "properties": {
+          "documentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ManagedDocumentWarning"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ManagedDocumentWarning": {
+        "required": [
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ModelDivisionInformationPublic": {
+        "required": [
+          "submodels"
+        ],
+        "type": "object",
+        "properties": {
+          "submodels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubmodelInformation"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ModelGroupDefinition2Dto": {
+        "required": [
+          "linkingAttribute",
+          "type",
+          "typeId"
+        ],
+        "type": "object",
+        "properties": {
+          "linkingAttribute": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "typeId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ModelGroupDefinitions2Dto": {
+        "required": [
+          "containmentIdentificationAttribute",
+          "containmentNamingAttribute",
+          "groupDefinitions"
+        ],
+        "type": "object",
+        "properties": {
+          "containmentIdentificationAttribute": {
+            "type": "string",
+            "nullable": true
+          },
+          "containmentNamingAttribute": {
+            "type": "string",
+            "nullable": true
+          },
+          "groupDefinitions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModelGroupDefinition2Dto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "ModelHierarchies2Dto": {
+        "required": [
+          "groupDefinitions",
+          "hierarchyDefinitions"
+        ],
+        "type": "object",
+        "properties": {
+          "hierarchyDefinitions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModelHierarchyDefinition2Dto"
+            }
+          },
+          "groupDefinitions": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ModelGroupDefinitions2Dto"
+              }
+            ],
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ModelHierarchyDefinition2Dto": {
+        "required": [
+          "displayUnnamedObjects",
+          "id",
+          "includedItems",
+          "isActive",
+          "isOriginal",
+          "levels",
+          "name",
+          "order",
+          "useAssociations"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isOriginal": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayUnnamedObjects": {
+            "type": "boolean"
+          },
+          "order": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ModelHierarchyOrder"
+              }
+            ]
+          },
+          "useAssociations": {
+            "type": "boolean"
+          },
+          "includedItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModelHierarchyIncludedItemDto"
+            }
+          },
+          "levels": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ModelHierarchyLevelForAttributesDto"
+                },
+                {
+                  "$ref": "#/components/schemas/ModelHierarchyLevelForCategorizationDto"
+                },
+                {
+                  "$ref": "#/components/schemas/ModelHierarchyLevelForSpaceDto"
+                }
+              ]
+            }
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ModelHierarchyDefinitionDto": {
+        "required": [
+          "displayUnnamedObjects",
+          "includedItems",
+          "isActive",
+          "isModified",
+          "isNew",
+          "levels",
+          "name",
+          "order",
+          "originalName",
+          "useAssociations"
+        ],
+        "type": "object",
+        "properties": {
+          "displayUnnamedObjects": {
+            "type": "boolean"
+          },
+          "includedItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModelHierarchyIncludedItemDto"
+            },
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "isModified": {
+            "type": "boolean"
+          },
+          "isNew": {
+            "type": "boolean"
+          },
+          "levels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModelHierarchyLevelDto"
+            },
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "order": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ModelHierarchyOrder"
+              }
+            ]
+          },
+          "originalName": {
+            "type": "string",
+            "nullable": true
+          },
+          "useAssociations": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ModelHierarchyIncludedItemDto": {
+        "required": [
+          "name",
+          "subtype",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "subtype": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ModelHierarchyLevel2Dto": {
+        "required": [
+          "levelType",
+          "name",
+          "nonMembersCategory"
+        ],
+        "type": "object",
+        "properties": {
+          "levelType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ModelHierarchyLevelType"
+              }
+            ],
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "nonMembersCategory": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "discriminator": {
+          "propertyName": "levelType",
+          "mapping": {
+            "Attribute": "#/components/schemas/ModelHierarchyLevelForAttributesDto",
+            "Categorization": "#/components/schemas/ModelHierarchyLevelForCategorizationDto",
+            "Space": "#/components/schemas/ModelHierarchyLevelForSpaceDto"
+          }
+        }
+      },
+      "ModelHierarchyLevelDto": {
+        "required": [
+          "groupName",
+          "name",
+          "nonMembersCategory",
+          "queryAttributes"
+        ],
+        "type": "object",
+        "properties": {
+          "groupName": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "nonMembersCategory": {
+            "type": "string",
+            "nullable": true
+          },
+          "queryAttributes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ModelHierarchyLevelForAttributesDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ModelHierarchyLevel2Dto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "attributes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "ModelHierarchyLevelForCategorizationDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ModelHierarchyLevel2Dto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "dataSourceAdapterName": {
+                "type": "string",
+                "nullable": true
+              },
+              "dataSourceId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "dataSourceName": {
+                "type": "string",
+                "nullable": true
+              },
+              "dataSourceTypeGuid": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "ModelHierarchyLevelForSpaceDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ModelHierarchyLevel2Dto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "spaceType": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "ModelHierarchyLevelType": {
+        "enum": [
+          "Attribute",
+          "Categorization",
+          "Space"
+        ],
+        "type": "string"
+      },
+      "ModelHierarchyOrder": {
+        "enum": [
+          "Undefined",
+          "Original",
+          "OriginalLines",
+          "Alphabetical"
+        ],
+        "type": "string"
+      },
+      "ModelItemAttributeDto": {
+        "required": [
+          "abbreviation",
+          "displayCategory",
+          "displayName",
+          "displayValue",
+          "eShareKey",
+          "isFromGroup",
+          "isKey",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "abbreviation": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayCategory": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayValue": {
+            "type": "string",
+            "nullable": true
+          },
+          "eShareKey": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/EShareKey"
+              },
+              {
+                "$ref": "#/components/schemas/GeometryIdKey"
+              },
+              {
+                "$ref": "#/components/schemas/TagKey"
+              },
+              {
+                "$ref": "#/components/schemas/DocumentIdKey"
+              },
+              {
+                "$ref": "#/components/schemas/PoiKey"
+              },
+              {
+                "$ref": "#/components/schemas/StatusTrackingKey"
+              },
+              {
+                "$ref": "#/components/schemas/MultiGeometryIdKey"
+              },
+              {
+                "$ref": "#/components/schemas/GuidIdKey"
+              }
+            ],
+            "nullable": true
+          },
+          "isFromGroup": {
+            "type": "boolean"
+          },
+          "isKey": {
+            "type": "boolean"
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ModelItemDescriptionDto": {
+        "required": [
+          "guidId",
+          "keyAttribute",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "guidId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "keyAttribute": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ModelItemDto": {
+        "required": [
+          "attributes",
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "attributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModelItemAttributeDto"
+            },
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ModelItemUintDto": {
+        "required": [
+          "attributes",
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "attributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModelItemAttributeDto"
+            },
+            "nullable": true
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MonthsDaysHours": {
+        "required": [
+          "days",
+          "hours",
+          "months"
+        ],
+        "type": "object",
+        "properties": {
+          "days": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hours": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "months": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MultiGeometryIdKey": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EShareKey"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "geometryIds": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "nullable": true
+              },
+              "modelImportDate": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "PatternMember": {
+        "required": [
+          "abbreviation",
+          "displayName",
+          "type",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "abbreviation": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PoiAttributeKindDto": {
+        "required": [
+          "abbreviation",
+          "dataType",
+          "enumValues",
+          "id",
+          "isForMarkup",
+          "isUsed",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "abbreviation": {
+            "type": "string",
+            "nullable": true
+          },
+          "dataType": {
+            "type": "string",
+            "nullable": true
+          },
+          "enumValues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PoiAttributeKindEnumDto"
+            },
+            "nullable": true
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isForMarkup": {
+            "type": "boolean"
+          },
+          "isUsed": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PoiAttributeKindEnumDto": {
+        "required": [
+          "id",
+          "isDefault",
+          "isUsed",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isDefault": {
+            "type": "boolean"
+          },
+          "isUsed": {
+            "type": "boolean"
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PoiKey": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EShareKey"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "externalId": {
+                "type": "string",
+                "nullable": true
+              },
+              "pointOfInterestKind": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "PointOfInterestAttributeDto": {
+        "required": [
+          "dataType",
+          "pointOfInterestKindId"
+        ],
+        "type": "object",
+        "properties": {
+          "dataType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PointOfInterestAttributeKindDtoDataType"
+              }
+            ],
+            "readOnly": true
+          },
+          "pointOfInterestKindId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "discriminator": {
+          "propertyName": "dataType",
+          "mapping": {
+            "String": "#/components/schemas/PointOfInterestStringAttributeDto",
+            "Multiline": "#/components/schemas/PointOfInterestMultilineAttributeDto",
+            "Enumeration": "#/components/schemas/PointOfInterestEnumAttributeDto",
+            "Image": "#/components/schemas/PointOfInterestImageAttributeDto",
+            "Drawing": "#/components/schemas/PointOfInterestDrawingAttributeDto"
+          }
+        }
+      },
+      "PointOfInterestAttributeKindDtoDataType": {
+        "enum": [
+          "String",
+          "Multiline",
+          "Enumeration",
+          "Image",
+          "Drawing"
+        ],
+        "type": "string"
+      },
+      "PointOfInterestDrawingAttributeDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PointOfInterestAttributeDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "drawing": {
+                "type": "string",
+                "nullable": true
+              },
+              "imageId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "PointOfInterestDto": {
+        "required": [
+          "assigneeName",
+          "externalId",
+          "height",
+          "id",
+          "kindId",
+          "name",
+          "page",
+          "referenceDocumentDatasourceId",
+          "referenceDocumentId",
+          "referenceDocumentRevision",
+          "referenceObjectAbbreviation",
+          "referenceObjectGuidId",
+          "referenceObjectValue",
+          "status",
+          "width",
+          "x",
+          "y",
+          "z"
+        ],
+        "type": "object",
+        "properties": {
+          "assigneeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "externalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "height": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "kindId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "referenceDocumentDatasourceId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "referenceDocumentId": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceDocumentRevision": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceObjectAbbreviation": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceObjectGuidId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "referenceObjectValue": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "width": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "x": {
+            "type": "number",
+            "format": "double"
+          },
+          "y": {
+            "type": "number",
+            "format": "double"
+          },
+          "z": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PointOfInterestEnumAttributeDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PointOfInterestAttributeDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "pointOfInterestAttributeKindEnumId": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "PointOfInterestImageAttributeDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PointOfInterestAttributeDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "cameraRotation": {
+                "type": "number",
+                "format": "double"
+              },
+              "cameraSlope": {
+                "type": "number",
+                "format": "double"
+              },
+              "cameraViewAngle": {
+                "type": "number",
+                "format": "double"
+              },
+              "cameraX": {
+                "type": "number",
+                "format": "double"
+              },
+              "cameraY": {
+                "type": "number",
+                "format": "double"
+              },
+              "cameraZ": {
+                "type": "number",
+                "format": "double"
+              },
+              "image": {
+                "type": "string",
+                "format": "byte",
+                "nullable": true
+              },
+              "isExternalImage": {
+                "type": "boolean"
+              },
+              "thumbnail": {
+                "type": "string",
+                "format": "byte",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "PointOfInterestKindDto": {
+        "required": [
+          "attributeKinds",
+          "color",
+          "hasAssignee",
+          "hasExternalId",
+          "hasPermissionCreateGroupIds",
+          "hasPermissionDeleteGroupIds",
+          "hasPermissionReadGroupIds",
+          "hasPermissionUpdateGroupIds",
+          "icon",
+          "iconUrl",
+          "id",
+          "isCreatable",
+          "isDeletable",
+          "isEditable",
+          "isForDocument",
+          "isImmutable",
+          "isMarkup",
+          "isModificationHistoryDisplayed",
+          "isPersonal",
+          "isReferencingGuid",
+          "name",
+          "pointCount",
+          "usesCameraLocation"
+        ],
+        "type": "object",
+        "properties": {
+          "attributeKinds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PoiAttributeKindDto"
+            },
+            "nullable": true
+          },
+          "color": {
+            "type": "string",
+            "nullable": true
+          },
+          "hasAssignee": {
+            "type": "boolean"
+          },
+          "hasExternalId": {
+            "type": "boolean"
+          },
+          "hasPermissionCreateGroupIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          },
+          "hasPermissionDeleteGroupIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          },
+          "hasPermissionReadGroupIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          },
+          "hasPermissionUpdateGroupIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          },
+          "icon": {
+            "type": "string",
+            "nullable": true
+          },
+          "iconUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isCreatable": {
+            "type": "boolean"
+          },
+          "isDeletable": {
+            "type": "boolean"
+          },
+          "isEditable": {
+            "type": "boolean"
+          },
+          "isForDocument": {
+            "type": "boolean"
+          },
+          "isImmutable": {
+            "type": "boolean"
+          },
+          "isMarkup": {
+            "type": "boolean"
+          },
+          "isModificationHistoryDisplayed": {
+            "type": "boolean"
+          },
+          "isPersonal": {
+            "type": "boolean"
+          },
+          "isReferencingGuid": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "pointCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "usesCameraLocation": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PointOfInterestMultilineAttributeDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PointOfInterestAttributeDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "PointOfInterestStringAttributeDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PointOfInterestAttributeDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "PointsOfInterestDto": {
+        "required": [
+          "kinds",
+          "points"
+        ],
+        "type": "object",
+        "properties": {
+          "points": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PointOfInterestDto"
+            },
+            "nullable": true
+          },
+          "kinds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PointOfInterestKindDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProblemDetails": {
+        "required": [
+          "detail",
+          "instance",
+          "status",
+          "title",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "ProjectDto": {
+        "required": [
+          "canBeSourceProject",
+          "containsImage",
+          "databaseName",
+          "description",
+          "id",
+          "is64BitOnly",
+          "isMainDatabaseUpToDate",
+          "isProjectAdmin",
+          "isProjectDatabaseUpToDate",
+          "isUsingSubmodels",
+          "name",
+          "sourceProjectId",
+          "tags",
+          "waveProjectId"
+        ],
+        "type": "object",
+        "properties": {
+          "canBeSourceProject": {
+            "type": "boolean"
+          },
+          "containsImage": {
+            "type": "boolean"
+          },
+          "databaseName": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "is64BitOnly": {
+            "type": "boolean"
+          },
+          "isMainDatabaseUpToDate": {
+            "type": "boolean"
+          },
+          "isProjectAdmin": {
+            "type": "boolean"
+          },
+          "isProjectDatabaseUpToDate": {
+            "type": "boolean"
+          },
+          "isUsingSubmodels": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceProjectId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "waveProjectId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PublicMarkupDetails": {
+        "required": [
+          "assignedTo",
+          "assignedToAccount",
+          "assignedToUserId",
+          "canDelete",
+          "comment",
+          "createdBy",
+          "createdByAccount",
+          "createdByUserId",
+          "createdOn",
+          "id",
+          "importance",
+          "kindId",
+          "modifiedBy",
+          "modifiedByAccount",
+          "modifiedByUserId",
+          "modifiedOn",
+          "referenceObjectAbbreviation",
+          "referenceObjectGuid",
+          "referenceObjectValue",
+          "status",
+          "thumbnailUrl",
+          "title",
+          "x",
+          "y",
+          "z"
+        ],
+        "type": "object",
+        "properties": {
+          "assignedTo": {
+            "type": "string",
+            "nullable": true
+          },
+          "assignedToAccount": {
+            "type": "string",
+            "nullable": true
+          },
+          "assignedToUserId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "canDelete": {
+            "type": "boolean"
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdByAccount": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdByUserId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "importance": {
+            "type": "string",
+            "nullable": true
+          },
+          "kindId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "modifiedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedByAccount": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedByUserId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "modifiedOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "referenceObjectAbbreviation": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceObjectGuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "referenceObjectValue": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "thumbnailUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "x": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "y": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "z": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PublicMarkupsDto": {
+        "required": [
+          "markups"
+        ],
+        "type": "object",
+        "properties": {
+          "markups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicMarkupDetails"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ServerInfoDto": {
+        "required": [
+          "automatedClientUpdates",
+          "azureADSettings",
+          "databaseCompatibilityLevel",
+          "databaseCompatibilityLevelIsOutdated",
+          "databaseConnectionErrorUrl",
+          "databaseEngineInfoIsExpress",
+          "databaseEngineInfoIsWrongBitness",
+          "databaseEngineVersionIsOutdated",
+          "databaseSchemaErrorUrl",
+          "excelLinksToApp",
+          "has3ddExport",
+          "integratedSecurity",
+          "isOnlyLocalHelpUsed",
+          "isWaveIntegrationEnabled",
+          "loginUrl",
+          "maxExcelObjectsCount",
+          "maxMultiselectCount",
+          "maxNumberOfCollisions",
+          "noLicenseUrl",
+          "productVersion",
+          "protocolVersion",
+          "protocolWhitelist",
+          "rootUrl",
+          "serverId",
+          "serverProductVersion",
+          "serverVersion",
+          "sessionTerminatedUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "automatedClientUpdates": {
+            "type": "boolean"
+          },
+          "azureADSettings": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AzureADSettings"
+              }
+            ],
+            "nullable": true
+          },
+          "databaseCompatibilityLevel": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "databaseCompatibilityLevelIsOutdated": {
+            "type": "boolean"
+          },
+          "databaseConnectionErrorUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "databaseEngineInfoIsExpress": {
+            "type": "boolean"
+          },
+          "databaseEngineInfoIsWrongBitness": {
+            "type": "boolean"
+          },
+          "databaseEngineVersionIsOutdated": {
+            "type": "boolean"
+          },
+          "databaseSchemaErrorUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "excelLinksToApp": {
+            "type": "boolean"
+          },
+          "has3ddExport": {
+            "type": "boolean"
+          },
+          "integratedSecurity": {
+            "type": "boolean"
+          },
+          "isOnlyLocalHelpUsed": {
+            "type": "boolean"
+          },
+          "isWaveIntegrationEnabled": {
+            "type": "boolean"
+          },
+          "loginUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "maxExcelObjectsCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxMultiselectCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxNumberOfCollisions": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "noLicenseUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "productVersion": {
+            "type": "string",
+            "nullable": true
+          },
+          "protocolVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "protocolWhitelist": {
+            "type": "string",
+            "nullable": true
+          },
+          "rootUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "serverId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "serverProductVersion": {
+            "type": "string",
+            "nullable": true
+          },
+          "serverVersion": {
+            "type": "string",
+            "nullable": true
+          },
+          "sessionTerminatedUrl": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StatusTrackingAttributeDto": {
+        "required": [
+          "kind",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatusTrackingAttributeKindDto"
+              }
+            ],
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StatusTrackingAttributeKindDto": {
+        "required": [
+          "dataType",
+          "id",
+          "isUsed",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "dataType": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isUsed": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StatusTrackingCategorizationSequenceConfiguration": {
+        "required": [
+          "defaultColor",
+          "endTime",
+          "initialObjectVisibilityState",
+          "intervalLength",
+          "isEnabled",
+          "isUsingTimeStamps",
+          "relativeEndTime",
+          "relativeStartTime",
+          "startTime",
+          "steps",
+          "timeStampsOffset"
+        ],
+        "type": "object",
+        "properties": {
+          "endTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "initialObjectVisibilityState": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CategorizationSequenceInitialObjectVisibilityState"
+              }
+            ]
+          },
+          "intervalLength": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MonthsDaysHours"
+              }
+            ],
+            "nullable": true
+          },
+          "isEnabled": {
+            "type": "boolean"
+          },
+          "isUsingTimeStamps": {
+            "type": "boolean"
+          },
+          "relativeEndTime": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MonthsDaysHours"
+              }
+            ],
+            "nullable": true
+          },
+          "relativeStartTime": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MonthsDaysHours"
+              }
+            ],
+            "nullable": true
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "timeStampsOffset": {
+            "type": "number",
+            "format": "double"
+          },
+          "defaultColor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StatusTrackingEntryDto": {
+        "required": [
+          "attributeAbbreviation",
+          "attributes",
+          "attributeValue",
+          "entryTime",
+          "enumId",
+          "enumName",
+          "guidId",
+          "isNewEnum",
+          "kindId",
+          "statusTrackingId"
+        ],
+        "type": "object",
+        "properties": {
+          "attributeAbbreviation": {
+            "type": "string",
+            "nullable": true
+          },
+          "kindId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "enumId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "statusTrackingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "attributeValue": {
+            "type": "string",
+            "nullable": true
+          },
+          "guidId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "entryTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "enumName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isNewEnum": {
+            "type": "boolean"
+          },
+          "attributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StatusTrackingAttributeDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StatusTrackingKey": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EShareKey"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "attributeValues": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "nullable": true
+              },
+              "enumIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "nullable": true
+              },
+              "geometryIds": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "nullable": true
+              },
+              "guidIdValues": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "nullable": true
+              },
+              "keyAttributeValues": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "nullable": true
+              },
+              "statusTrackingIds": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "nullable": true
+              },
+              "statusTrackingKindId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "templateAttributes": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "StatusTrackingKindDto": {
+        "required": [
+          "attributeDefinitionAbbreviation",
+          "attributeDefinitionId",
+          "attributeDefinitionName",
+          "attributes",
+          "categorizationSequenceConfiguration",
+          "defaultCategory",
+          "defaultColor",
+          "displayCategory",
+          "hasPermissionChangeGroupIds",
+          "hasPermissionCreateGroupIds",
+          "hasPermissionSeeGroupIds",
+          "id",
+          "isAddingAllowedForUser",
+          "isAddingEnumsAllowed",
+          "isChangingAllowed",
+          "isReferencingGuid",
+          "isUsedForGrouping",
+          "name",
+          "statusTrackingCount",
+          "statusValues",
+          "template",
+          "transitions",
+          "transitionsForUser"
+        ],
+        "type": "object",
+        "properties": {
+          "attributeDefinitionAbbreviation": {
+            "type": "string",
+            "nullable": true
+          },
+          "attributeDefinitionId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "attributeDefinitionName": {
+            "type": "string",
+            "nullable": true
+          },
+          "attributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StatusTrackingAttributeKindDto"
+            },
+            "nullable": true
+          },
+          "categorizationSequenceConfiguration": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StatusTrackingCategorizationSequenceConfiguration"
+            },
+            "nullable": true
+          },
+          "defaultCategory": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultColor": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayCategory": {
+            "type": "string",
+            "nullable": true
+          },
+          "hasPermissionChangeGroupIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          },
+          "hasPermissionCreateGroupIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          },
+          "hasPermissionSeeGroupIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          },
+          "isAddingEnumsAllowed": {
+            "type": "boolean"
+          },
+          "isReferencingGuid": {
+            "type": "boolean"
+          },
+          "isUsedForGrouping": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "statusValues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StatusTrackingKindEnumDto"
+            },
+            "nullable": true
+          },
+          "template": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PatternMember"
+            },
+            "nullable": true
+          },
+          "transitions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StatusTrackingStateTransitionDto"
+            },
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isAddingAllowedForUser": {
+            "type": "boolean"
+          },
+          "isChangingAllowed": {
+            "type": "boolean"
+          },
+          "statusTrackingCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "transitionsForUser": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StatusTrackingStateTransitionDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StatusTrackingKindEnumDto": {
+        "required": [
+          "attributes",
+          "color",
+          "groupsAllowedToTarget",
+          "id",
+          "isUsed",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "attributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StatusTrackingAttributeKindDto"
+            },
+            "nullable": true
+          },
+          "color": {
+            "type": "string",
+            "nullable": true
+          },
+          "groupsAllowedToTarget": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isUsed": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StatusTrackingStateTransitionDto": {
+        "required": [
+          "fromStateId",
+          "toStateIds"
+        ],
+        "type": "object",
+        "properties": {
+          "fromStateId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "toStateIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SubmodelInformation": {
+        "required": [
+          "description",
+          "id",
+          "name",
+          "ruleId",
+          "ruleName"
+        ],
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "ruleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ruleName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TagKey": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EShareKey"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tags": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TagKeyAttribute"
+                },
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "TagKeyAttribute": {
+        "required": [
+          "attribute",
+          "guidId",
+          "isGroup",
+          "isKey",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "attribute": {
+            "type": "string",
+            "nullable": true
+          },
+          "guidId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "isGroup": {
+            "type": "boolean"
+          },
+          "isKey": {
+            "type": "boolean"
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "WhoAmIDto": {
+        "required": [
+          "authProvider",
+          "fullName",
+          "login",
+          "role",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "authProvider": {
+            "type": "string",
+            "nullable": true
+          },
+          "fullName": {
+            "type": "string",
+            "nullable": true
+          },
+          "login": {
+            "type": "string",
+            "nullable": true
+          },
+          "role": {
+            "type": "string",
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
