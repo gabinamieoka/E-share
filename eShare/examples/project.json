@@ -1,0 +1,52 @@
+{
+  "_comment": "This is the master file for a single project. It defines the project's main details and links to the specific models and documents that belong to it. It acts as the main entry point for the application.",
+  "id": "proj-001",
+  "name": "Shipyard Container Project",
+  "description": "A project demonstrating the visualization and management of industrial containers for a shipyard.",
+  "isProjectAdmin": true,
+  "tags": ["shipyard", "container", "logistics"],
+  "models": [
+    {
+      "id": "model-001",
+      "name": "Container Industrial",
+      "src": "assets/SMM_Container_short.glb",
+      "poster": "assets/container.png",
+      "lastModified": "2025-09-18T10:00:00Z"
+    }
+  ],
+  "documents": [
+    {
+      "id": "doc-001",
+      "name": "Container Technical Specification",
+      "docType": "PDF",
+      "path": "/documents/container_specs.pdf",
+      "revision": "A",
+      "metadata": [
+        {
+          "abbreviation": "AUTHOR",
+          "name": "Author",
+          "value": "John Doe"
+        },
+        {
+          "abbreviation": "DATE",
+          "name": "Date",
+          "value": "2025-01-15"
+        }
+      ]
+    },
+    {
+      "id": "doc-002",
+      "name": "Maintenance Manual",
+      "docType": "PDF",
+      "path": "/documents/maintenance_manual.pdf",
+      "revision": "B",
+      "metadata": [
+        {
+          "abbreviation": "AUTHOR",
+          "name": "Author",
+          "value": "Jane Smith"
+        }
+      ]
+    }
+  ]
+}

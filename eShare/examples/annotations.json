@@ -1,0 +1,10 @@
+[
+  {
+    "id": "anno-001",
+    "modelId": "model-001",
+    "userId": "user-02",
+    "text": "Verify the thickness of this steel plate.",
+    "position": { "x": 1.2, "y": 3.4, "z": -0.5 },
+    "createdAt": "2025-09-18T18:30:00Z"
+  }
+]

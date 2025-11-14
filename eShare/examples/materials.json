@@ -1,0 +1,18 @@
+[
+  {
+    "id": "mat-001",
+    "name": "Steel",
+    "color": "#b0b0b0",
+    "texture": "/assets/textures/steel.jpg",
+    "roughness": 0.3,
+    "metalness": 1.0
+  },
+  {
+    "id": "mat-002",
+    "name": "Plastic",
+    "color": "#e0e0e0",
+    "texture": "/assets/textures/plastic.jpg",
+    "roughness": 0.7,
+    "metalness": 0.1
+  }
+]

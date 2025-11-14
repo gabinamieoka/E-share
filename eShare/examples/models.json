@@ -1,0 +1,52 @@
+[
+  {
+    "id": "model-001",
+    "name": "Grid empty",
+    "description": "Empty reference grid",
+    "src": "/assets/Grid_empty.gltf",
+    "poster": ""
+  },
+  {
+    "id": "model-002",
+    "name": "Container",
+    "description": "Container without pipes",
+    "src": "/assets/SMM_Container_short_wo_pipes.gltf",
+    "poster": ""
+  },
+  {
+    "id": "model-003",
+    "name": "Container",
+    "description": "Short container",
+    "src": "/assets/SMM_Container_short.glb",
+    "poster": ""
+  },
+  {
+    "id": "model-004",
+    "name": "Strebenbefestigung",
+    "description": "Structural support",
+    "src": "/assets/Strebenbefestigung-160399.glb",
+    
+    "poster": ""
+  },
+  {
+    "id": "model-005",
+    "name": "Sektionsumgebung",
+    "description": "Section environment",
+    "src": "/assets/Sektionsumgebung_BspTUHH.glb",
+    "poster": ""
+  },
+  {
+    "id": "model-006",
+    "name": "SKSTOP 2C60191252",
+    "description": "SKS top model",
+    "src": "/assets/SKS_TOP_2C_60_191252.glb",
+    "poster": ""
+  },
+  {
+    "id": "model-007",
+    "name": "Stabil_D-3G_SILIKON_89_115805",
+    "description": "Stabil D-3G silicone",
+    "src": "/assets/Stabil_D-3G_SILIKON_89_115805.glb",
+    "poster": ""
+  }
+]

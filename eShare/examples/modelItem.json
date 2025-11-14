@@ -1,0 +1,22 @@
+[
+  {
+    "id": "item-123",
+    "name": "Pressure Valve",
+    "attributes": [
+      { "abbreviation": "PN", "value": "16 bar" },
+      { "abbreviation": "Material", "value": "Stainless Steel" }
+    ],
+    "position": "1m 2m 3m",
+    "normal": "0 1 0"
+  },
+  {
+    "id": "item-456",
+    "name": "Pipes",
+    "attributes": [
+    ],
+    "position": "2m 1.5m 0.5m",
+    "normal": "0 1 0"
+  }
+]
+
+

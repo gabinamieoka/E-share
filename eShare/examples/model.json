@@ -1,0 +1,24 @@
+{
+  "id": "model-001",
+  "name": "Industrial Container",
+  "hierarchies": [
+    {
+      "id": "h-001",
+      "name": "Structural",
+      "levels": [
+        { "name": "Component Type" },
+        { "name": "Material" }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "guid-item-001",
+      "name": "Main Body"
+    },
+    {
+      "id": "guid-item-002",
+      "name": "pipes"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "hotspots": [
+    { "name": "hotspot-dot+X-Y+Z", "type": "dot" },
+    { "name": "hotspot-dim+X-Y",   "type": "dim", "label": "Height" },
+    { "name": "hotspot-dot+X-Y-Z", "type": "dot" },
+    { "name": "hotspot-dim+X-Z",   "type": "dim", "label": "Depth" },
+    { "name": "hotspot-dot+X+Y-Z", "type": "dot" },
+    { "name": "hotspot-dim+Y-Z",   "type": "dim", "label": "Width" },
+    { "name": "hotspot-dot-X+Y-Z", "type": "dot" },
+    { "name": "hotspot-dim-X-Z",   "type": "dim", "label": "Depth" },
+    { "name": "hotspot-dot-X-Y-Z", "type": "dot" },
+    { "name": "hotspot-dim-X-Y",   "type": "dim", "label": "Height" },
+    { "name": "hotspot-dot-X-Y+Z", "type": "dot" }
+  ],
+  "lines": [
+    { "from": "hotspot-dot+X-Y+Z", "to": "hotspot-dot+X-Y-Z", "dim": "hotspot-dim+X-Y" },
+    { "from": "hotspot-dot+X-Y-Z", "to": "hotspot-dot+X+Y-Z", "dim": "hotspot-dim+X-Z" },
+    { "from": "hotspot-dot+X+Y-Z", "to": "hotspot-dot-X+Y-Z" },
+    { "from": "hotspot-dot-X+Y-Z", "to": "hotspot-dot-X-Y-Z", "dim": "hotspot-dim-X-Z" },
+    { "from": "hotspot-dot-X-Y-Z", "to": "hotspot-dot-X-Y+Z", "dim": "hotspot-dim-X-Y" }
+  ]
+}
