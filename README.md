@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 
 Shipyard 3D Model Viewer
@@ -93,3 +94,6 @@ This project is licensed under the MIT License. See the LICENSE file for more de
 You should create a file named LICENSE in your project root and paste the MIT License text into it.
 
 👤 Contact
+=======
+"# awsapp" 
+>>>>>>> 332683e06abaf63dc954c140e9661c2e9b3439e8
