@@ -1,4 +1,5 @@
-<<<<<<< HEAD
+![Demo](demo.gif)
+
 
 
 Shipyard 3D Model Viewer
